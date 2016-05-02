@@ -3,9 +3,9 @@ http://docs.sqlalchemy.org/en/rel_1_0/orm/tutorial.html
 Retrieved 2016-04-23."""
 
 import sqlalchemy as sqla
+import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as sqled
 
-engine = sqla.create_engine ('sqlite:///:memory:', echo=True)
 Base = sqled.declarative_base ()
 
 class User (Base):
@@ -21,3 +21,17 @@ class User (Base):
     def __repr__ (self):
         return "<User(name='{0:s}', fullname='{1:s}', password='{2:s}')" \
             .format (self.name, self.fullname, self.password)
+
+def go (hwuh='sqlite:///:memory:'):
+    """Run an example."""
+    engine = sqla.create_engine (hwuh, echo=True)
+    Session = orm.sessionmaker (bind=engine)
+    session = Session ()
+
+    Base.metadata.create_all (engine)
+
+    ed_user = User (name='ed',
+                    fullname='Edward L. Q. Jones',
+                    password='Yeah, nope.')
+    session.add (ed_user)
+    print (ed_user is session.query (User).filter_by (name='ed').first ())
