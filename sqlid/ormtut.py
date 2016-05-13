@@ -33,5 +33,16 @@ def go (hwuh='sqlite:///:memory:'):
     ed_user = User (name='ed',
                     fullname='Edward L. Q. Jones',
                     password='Yeah, nope.')
+    print ('Ed ID pre = {0:s}'.format (str (ed_user.id)))
     session.add (ed_user)
     print (ed_user is session.query (User).filter_by (name='ed').first ())
+
+    session.add_all ( [
+        User (name='wendy', fullname='Wendy Williams', password='still no'),
+        User (name='mary', fullname='Mary Contrary', password='no grow'),
+        User (name='fred', fullname='Fred Flintstone', password='rubble') ] )
+
+    session.commit ()
+    print ('Ed ID post = {0:d}'.format (ed_user.id))
+
+    return session
