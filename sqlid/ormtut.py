@@ -22,7 +22,7 @@ class User (Base):
         return "<User(name='{0:s}', fullname='{1:s}', password='{2:s}')" \
             .format (self.name, self.fullname, self.password)
 
-def go (hwuh='sqlite:///:memory:'):
+def go_part1 (hwuh='sqlite:///:memory:'):
     """Run an example."""
     engine = sqla.create_engine (hwuh, echo=True)
     Session = orm.sessionmaker (bind=engine)
@@ -46,3 +46,24 @@ def go (hwuh='sqlite:///:memory:'):
     print ('Ed ID post = {0:d}'.format (ed_user.id))
 
     return session
+
+class Address (Base):
+    __tablename__ = 'addresses'
+    id = sqla.Column (sqla.Integer, primary_key=True)
+    email_address = sqla.Column (sqla.String, nullable=False)
+    user_id = sqla.Column (sqla.Integer, sqla.ForeignKey ('users.id'))
+
+    user = orm.relationship ('User', back_populates='addresses')
+
+    def __repr__ (self):
+        return 'Address (email_address="{0:s}"'.format (self.email_address)
+
+def go_part2 (session, huwh='sqlite:///:memory:'):
+    """Part 2: "Building a Relationship." """
+    User.addresses = orm.relationship ('Address',
+                                       order_by=Address.id,
+                                       back_populates='user')
+
+def go (huwh='sqlite:///:memory:'):
+    """Pull all of the examples together."""
+    session = go_part1 (hwuh)
