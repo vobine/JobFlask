@@ -22,14 +22,8 @@ class User (Base):
         return "<User(name='{0:s}', fullname='{1:s}', password='{2:s}')" \
             .format (self.name, self.fullname, self.password)
 
-def go_part1 (hwuh='sqlite:///:memory:'):
+def go_part1 (engine, session, hwuh='sqlite:///:memory:'):
     """Run an example."""
-    engine = sqla.create_engine (hwuh, echo=True)
-    Session = orm.sessionmaker (bind=engine)
-    session = Session ()
-
-    Base.metadata.create_all (engine)
-
     ed_user = User (name='ed',
                     fullname='Edward L. Q. Jones',
                     password='Yeah, nope.')
@@ -64,6 +58,16 @@ def go_part2 (session, huwh='sqlite:///:memory:'):
                                        order_by=Address.id,
                                        back_populates='user')
 
-def go (huwh='sqlite:///:memory:'):
+def go (hwuh='sqlite:///:memory:'):
     """Pull all of the examples together."""
-    session = go_part1 (hwuh)
+    engine = sqla.create_engine (hwuh, echo=True)
+    Session = orm.sessionmaker (bind=engine)
+    session = Session ()
+
+    Base.metadata.create_all (engine)
+
+    go_part1 (engine, session, hwuh)
+    # go_part2 (engine, session, hwuh)
+
+    return dict (session=session,
+                 engine=engine)
