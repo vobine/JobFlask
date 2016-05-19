@@ -77,7 +77,7 @@ def go (hwuh='sqlite:///:memory:'):
     Base.metadata.create_all (engine)
 
     go_part1 (engine, session, hwuh)
-    # go_part2 (engine, session, hwuh)
+    go_part2 (engine, session, hwuh)
 
     return dict (session=session,
                  engine=engine)
