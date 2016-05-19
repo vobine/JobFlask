@@ -68,6 +68,13 @@ def go_part2 (engine, session):
     for i, a in enumerate (jack.addresses):
         print ('{0:d} {1:s}'.format (i, repr (a)))
 
+    for u, a in session.query (User, Address) \
+                       .filter (User.id == Address.user_id) \
+                       .filter (Address.email_address == 'jack@example.com') \
+                       .all ():
+        print ('{0:s}: {1:s}'.format (u.fullname, a.email_address))
+
+
 def go (hwuh='sqlite:///:memory:'):
     """Pull all of the examples together."""
     engine = sqla.create_engine (hwuh, echo=True)
