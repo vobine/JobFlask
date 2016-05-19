@@ -22,7 +22,7 @@ class User (Base):
         return "<User(name='{0:s}', fullname='{1:s}', password='{2:s}')" \
             .format (self.name, self.fullname, self.password)
 
-def go_part1 (engine, session, hwuh='sqlite:///:memory:'):
+def go_part1 (engine, session):
     """Run an example."""
     ed_user = User (name='ed',
                     fullname='Edward L. Q. Jones',
@@ -39,7 +39,7 @@ def go_part1 (engine, session, hwuh='sqlite:///:memory:'):
     session.commit ()
     print ('Ed ID post = {0:d}'.format (ed_user.id))
 
-def go_part2 (engine, session, huwh='sqlite:///:memory:'):
+def go_part2 (engine, session):
     """Part 2: "Building a Relationship." """
 
     class Address (Base):
@@ -76,8 +76,8 @@ def go (hwuh='sqlite:///:memory:'):
 
     Base.metadata.create_all (engine)
 
-    go_part1 (engine, session, hwuh)
-    go_part2 (engine, session, hwuh)
+    go_part1 (engine, session)
+    go_part2 (engine, session)
 
     return dict (session=session,
                  engine=engine)
