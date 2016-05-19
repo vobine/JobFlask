@@ -39,8 +39,6 @@ def go_part1 (engine, session, hwuh='sqlite:///:memory:'):
     session.commit ()
     print ('Ed ID post = {0:d}'.format (ed_user.id))
 
-    return session
-
 class Address (Base):
     __tablename__ = 'addresses'
     id = sqla.Column (sqla.Integer, primary_key=True)
@@ -52,11 +50,22 @@ class Address (Base):
     def __repr__ (self):
         return 'Address (email_address="{0:s}"'.format (self.email_address)
 
-def go_part2 (session, huwh='sqlite:///:memory:'):
+def go_part2 (engine, session, huwh='sqlite:///:memory:'):
     """Part 2: "Building a Relationship." """
     User.addresses = orm.relationship ('Address',
                                        order_by=Address.id,
                                        back_populates='user')
+    Base.metadata.create_all (engine)
+
+    jack = User (name='jack', fullname='Jack Bean', password='Geant')
+    print ("Jack's initial addresses: {0:s}".format (repr (jack.addresses)))
+    jack.addresses = [ Address (email_address='jack@example.com'),
+                       Address (email_address='jb25@example.com') ]
+    session.add (jack)
+    session.commit ()
+    print ("Jack's addresses after add/commit:")
+    for i, a in enumerate (jack.addresses):
+        print ('{0:d} {1:s}'.format (i, repr (a)))
 
 def go (hwuh='sqlite:///:memory:'):
     """Pull all of the examples together."""
