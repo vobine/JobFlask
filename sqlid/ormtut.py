@@ -39,19 +39,20 @@ def go_part1 (engine, session, hwuh='sqlite:///:memory:'):
     session.commit ()
     print ('Ed ID post = {0:d}'.format (ed_user.id))
 
-class Address (Base):
-    __tablename__ = 'addresses'
-    id = sqla.Column (sqla.Integer, primary_key=True)
-    email_address = sqla.Column (sqla.String, nullable=False)
-    user_id = sqla.Column (sqla.Integer, sqla.ForeignKey ('users.id'))
-
-    user = orm.relationship ('User', back_populates='addresses')
-
-    def __repr__ (self):
-        return 'Address (email_address="{0:s}"'.format (self.email_address)
-
 def go_part2 (engine, session, huwh='sqlite:///:memory:'):
     """Part 2: "Building a Relationship." """
+
+    class Address (Base):
+        __tablename__ = 'addresses'
+        id = sqla.Column (sqla.Integer, primary_key=True)
+        email_address = sqla.Column (sqla.String, nullable=False)
+        user_id = sqla.Column (sqla.Integer, sqla.ForeignKey ('users.id'))
+
+        user = orm.relationship ('User', back_populates='addresses')
+
+        def __repr__ (self):
+            return 'Address (email_address="{0:s}"'.format (self.email_address)
+
     User.addresses = orm.relationship ('Address',
                                        order_by=Address.id,
                                        back_populates='user')
