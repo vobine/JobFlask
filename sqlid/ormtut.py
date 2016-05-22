@@ -74,6 +74,75 @@ def go_part2 (engine, session):
                        .all ():
         print ('{0:s}: {1:s}'.format (u.fullname, a.email_address))
 
+# association table
+post_keywords = sqla.Table (
+    'post_keywords', Base.metadata,
+    sqla.Column ('post_id',
+                 sqla.ForeignKey ('posts.id'),
+                 primary_key=True),
+    sqla.Column ('keyword_id',
+                 sqla.ForeignKey ('keywords.id'),
+                 primary_key=True)
+)
+
+class BlogPost(Base):
+    __tablename__ = 'posts'
+
+    id = sqla.Column (sqla.Integer, primary_key=True)
+    user_id = sqla.Column (sqla.Integer, sqla.ForeignKey('users.id'))
+    headline = sqla.Column (sqla.String (255), nullable=False)
+    body = sqla.Column (sqla.Text)
+
+    # many to many BlogPost<->Keyword
+    keywords = orm.relationship ('Keyword',
+                                 secondary=post_keywords,
+                                 back_populates='posts')
+
+    def __init__ (self, headline, body, author):
+        self.author = author
+        self.headline = headline
+        self.body = body
+
+    def __repr__ (self):
+        return "BlogPost(%r, %r, %r)" % (self.headline, self.body, self.author)
+
+class Keyword (Base):
+    __tablename__ = 'keywords'
+
+    id = sqla.Column (sqla.Integer, primary_key=True)
+    keyword = sqla.Column (sqla.String(50), nullable=False, unique=True)
+    posts = orm.relationship ('BlogPost',
+                              secondary=post_keywords,
+                              back_populates='keywords')
+
+    def __init__ (self, keyword):
+        self.keyword = keyword
+
+def go_part3 (engine, session):
+    """Part 3: many-to-many."""
+    BlogPost.author = orm.relationship (User, back_populates="posts")
+    User.posts = orm.relationship (BlogPost, back_populates="author", lazy="dynamic")
+
+    wendy = session.query (User) \
+            .filter_by (name='wendy') \
+            .one ()
+    post = BlogPost ('A blog post! From Wendy! Whoa!', wendy)
+
+    session.add (post)
+    post.keywords.append (Keyword ('wendy'))
+    post.keywords.append (Keywords ('first'))
+
+    session.query (BlogPost) \
+        .filter (BlogPost.keywords.any (keyword='first')) \
+        .all ()
+    session.query(BlogPost) \
+        .filter (BlogPost.author==wendy) \
+        .filter (BlogPost.keywords.any (keyword='first')) \
+        .all ()
+    wendy.posts \
+        .filter (BlogPost.keywords.any (keyword='firstpost')) \
+        .all ()
+
 
 def go (hwuh='sqlite:///:memory:'):
     """Pull all of the examples together."""
