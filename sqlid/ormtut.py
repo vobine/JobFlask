@@ -22,59 +22,18 @@ class User (Base):
         return "<User(name='{0:s}', fullname='{1:s}', password='{2:s}')" \
             .format (self.name, self.fullname, self.password)
 
-def go_part1 (engine, session):
-    """Run an example."""
-    ed_user = User (name='ed',
-                    fullname='Edward L. Q. Jones',
-                    password='Yeah, nope.')
-    print ('Ed ID pre = {0:s}'.format (str (ed_user.id)))
-    session.add (ed_user)
-    print (ed_user is session.query (User).filter_by (name='ed').first ())
+class Address (Base):
+    __tablename__ = 'addresses'
+    id = sqla.Column (sqla.Integer, primary_key=True)
+    email_address = sqla.Column (sqla.String, nullable=False)
+    user_id = sqla.Column (sqla.Integer, sqla.ForeignKey ('users.id'))
 
-    session.add_all ( [
-        User (name='wendy', fullname='Wendy Williams', password='still no'),
-        User (name='mary', fullname='Mary Contrary', password='no grow'),
-        User (name='fred', fullname='Fred Flintstone', password='rubble') ] )
+    user = orm.relationship ('User', back_populates='addresses')
 
-    session.commit ()
-    print ('Ed ID post = {0:d}'.format (ed_user.id))
+    def __repr__ (self):
+        return 'Address (email_address="{0:s}"'.format (self.email_address)
 
-def go_part2 (engine, session):
-    """Part 2: "Building a Relationship." """
-
-    class Address (Base):
-        __tablename__ = 'addresses'
-        id = sqla.Column (sqla.Integer, primary_key=True)
-        email_address = sqla.Column (sqla.String, nullable=False)
-        user_id = sqla.Column (sqla.Integer, sqla.ForeignKey ('users.id'))
-
-        user = orm.relationship ('User', back_populates='addresses')
-
-        def __repr__ (self):
-            return 'Address (email_address="{0:s}"'.format (self.email_address)
-
-    User.addresses = orm.relationship ('Address',
-                                       order_by=Address.id,
-                                       back_populates='user')
-    Base.metadata.create_all (engine)
-
-    jack = User (name='jack', fullname='Jack Bean', password='Geant')
-    print ("Jack's initial addresses: {0:s}".format (repr (jack.addresses)))
-    jack.addresses = [ Address (email_address='jack@example.com'),
-                       Address (email_address='jb25@example.com') ]
-    session.add (jack)
-    session.commit ()
-    print ("Jack's addresses after add/commit:")
-    for i, a in enumerate (jack.addresses):
-        print ('{0:d} {1:s}'.format (i, repr (a)))
-
-    for u, a in session.query (User, Address) \
-                       .filter (User.id == Address.user_id) \
-                       .filter (Address.email_address == 'jack@example.com') \
-                       .all ():
-        print ('{0:s}: {1:s}'.format (u.fullname, a.email_address))
-
-# association table
+# association table for part 3
 post_keywords = sqla.Table (
     'post_keywords', Base.metadata,
     sqla.Column ('post_id',
@@ -118,19 +77,67 @@ class Keyword (Base):
     def __init__ (self, keyword):
         self.keyword = keyword
 
-def go_part3 (engine, session):
-    """Part 3: many-to-many."""
+def datadef (engine, session):
+    """Collect data definitions across over parts of the tutorial."""
+    # Part 2: one-to-many/many-to-one mapping
+    User.addresses = orm.relationship ('Address',
+                                       order_by=Address.id,
+                                       back_populates='user')
+
+    # Part 3: many-to-many mapping
     BlogPost.author = orm.relationship (User, back_populates="posts")
     User.posts = orm.relationship (BlogPost, back_populates="author", lazy="dynamic")
 
+    Base.metadata.create_all (engine)
+
+def go_part1 (engine, session):
+    """Run an example."""
+    ed_user = User (name='ed',
+                    fullname='Edward L. Q. Jones',
+                    password='Yeah, nope.')
+    print ('Ed ID pre = {0:s}'.format (str (ed_user.id)))
+    session.add (ed_user)
+    print (ed_user is session.query (User).filter_by (name='ed').first ())
+
+    session.add_all ( [
+        User (name='wendy', fullname='Wendy Williams', password='still no'),
+        User (name='mary', fullname='Mary Contrary', password='no grow'),
+        User (name='fred', fullname='Fred Flintstone', password='rubble') ] )
+
+    session.commit ()
+    print ('Ed ID post = {0:d}'.format (ed_user.id))
+
+def go_part2 (engine, session):
+    """Part 2: "Building a Relationship." """
+
+    jack = User (name='jack', fullname='Jack Bean', password='Geant')
+    print ("Jack's initial addresses: {0:s}".format (repr (jack.addresses)))
+    jack.addresses = [ Address (email_address='jack@example.com'),
+                       Address (email_address='jb25@example.com') ]
+    session.add (jack)
+    session.commit ()
+    print ("Jack's addresses after add/commit:")
+    for i, a in enumerate (jack.addresses):
+        print ('{0:d} {1:s}'.format (i, repr (a)))
+
+    for u, a in session.query (User, Address) \
+                       .filter (User.id == Address.user_id) \
+                       .filter (Address.email_address == 'jack@example.com') \
+                       .all ():
+        print ('{0:s}: {1:s}'.format (u.fullname, a.email_address))
+
+def go_part3 (engine, session):
+    """Part 3: many-to-many."""
     wendy = session.query (User) \
             .filter_by (name='wendy') \
             .one ()
-    post = BlogPost ('A blog post! From Wendy! Whoa!', wendy)
+    post = BlogPost ('A blog post! From Wendy! Whoa!',
+                     'This is content.',
+                     wendy)
 
     session.add (post)
     post.keywords.append (Keyword ('wendy'))
-    post.keywords.append (Keywords ('first'))
+    post.keywords.append (Keyword ('first'))
 
     session.query (BlogPost) \
         .filter (BlogPost.keywords.any (keyword='first')) \
@@ -150,7 +157,7 @@ def go (hwuh='sqlite:///:memory:'):
     Session = orm.sessionmaker (bind=engine)
     session = Session ()
 
-    Base.metadata.create_all (engine)
+    datadef (engine, session)
 
     go_part1 (engine, session)
     go_part2 (engine, session)
