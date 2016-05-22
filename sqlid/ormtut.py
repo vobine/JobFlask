@@ -163,6 +163,7 @@ def go (hwuh, verbose):
 
     go_part1 (engine, session)
     go_part2 (engine, session)
+    go_part3 (engine, session)
 
     return dict (session=session,
                  engine=engine)
