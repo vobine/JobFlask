@@ -2,6 +2,8 @@
 http://docs.sqlalchemy.org/en/rel_1_0/orm/tutorial.html
 Retrieved 2016-04-23."""
 
+import argparse
+
 import sqlalchemy as sqla
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as sqled
@@ -151,9 +153,9 @@ def go_part3 (engine, session):
         .all ()
 
 
-def go (hwuh='sqlite:///:memory:'):
+def go (hwuh, verbose):
     """Pull all of the examples together."""
-    engine = sqla.create_engine (hwuh, echo=True)
+    engine = sqla.create_engine (hwuh, echo=verbose)
     Session = orm.sessionmaker (bind=engine)
     session = Session ()
 
@@ -164,3 +166,21 @@ def go (hwuh='sqlite:///:memory:'):
 
     return dict (session=session,
                  engine=engine)
+
+def main (argv):
+    """Command-line handler."""
+    parser = argparse.ArgumentParser (description='SQLAlchemy ORM tutorial.')
+    parser.add_argument ('--engine', '-e',
+                         help='URL (URI?) for database engine',
+                         action='store',
+                         default='sqlite:///:memory:')
+    parser.add_argument ('--verbose', '-v',
+                         help='Display progress',
+                         action='store_true')
+    args = parser.parse_args (argv)
+
+    go (hwuh=args.engine, verbose=args.verbose)
+
+if __name__ == "__main__":
+    from sys import argv
+    main (argv[1:])
