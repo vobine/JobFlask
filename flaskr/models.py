@@ -21,6 +21,7 @@ class Entries (Base):
 
 def init_db (url='sqlite:///:memory:', verbose=False):
     """Initialize connection to database."""
+    global session
     engine = sql.create_engine (url, echo=verbose)
     session = orm.scoped_session (
         orm.sessionmaker (autocommit=False,
