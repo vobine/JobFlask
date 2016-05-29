@@ -4,7 +4,7 @@ import sqlalchemy.ext.declarative as sqldcl
 
 Base = sqldcl.declarative_base ()
 
-class Entries (Base):
+class Entry (Base):
     """FlaskR entry definition"""
     __tablename__ = 'entries'
 
