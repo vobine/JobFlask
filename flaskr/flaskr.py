@@ -1,7 +1,8 @@
 # all the imports
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
-import models 
+from . import models 
+from . import app
 
 # configuration
 DATABASE = 'sqlite:////tmp/flaskr.db'
@@ -11,7 +12,6 @@ USERNAME = 'admin'
 PASSWORD = 'default'
 
 # create our little application :)
-app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
