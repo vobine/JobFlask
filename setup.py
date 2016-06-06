@@ -27,6 +27,7 @@ setup(
     license='GNU General Public License, Version 2',
     author='Hal Peterson',
     packages=[ 'jobflask' ],
+    scripts=[ 'jobflask.py' ],
     install_requires=['sqlalchemy', 'flask'], # ... and more TBD
     package_data={
         'jobflask' : ['static/*', 'templates/*'],
