@@ -4,18 +4,6 @@ import sqlalchemy.ext.declarative as sqldcl
 
 Base = sqldcl.declarative_base ()
 
-def init_db (url, verbose=False):
-    """Initialize connection to database."""
-    global session
-    engine = sql.create_engine (url, echo=verbose)
-    session = orm.scoped_session (
-        orm.sessionmaker (autocommit=False,
-                          autoflush=False,
-                          bind=engine))
-    Base.query = session.query_property ()
-    Base.metadata.create_all (bind=engine)
-
-
 # Implementation parameters.
 CHAR_LIMITS = {
     'abbr' : 4,
@@ -49,8 +37,8 @@ class JobOwner (Base):
 
 class Job (Base):
     """An individual task to be scheduled. Grist for the mill."""
-    name = models.CharField (max_length=CHAR_LIMITS['name'])
-    desc = models.CharField (max_length=CHAR_LIMITS['desc'])
+    name = models.CharField (sql.String (CHAR_LIMITS['name']))
+    desc = models.CharField (sql.String (CHAR_LIMITS['desc']))
     owner = models.ForeignKey (JobOwner, null=True)
     state = models.IntegerField (choices=tuple (
         (k, v[1]) for k, v in JOB_STATES.items ()))
@@ -61,9 +49,9 @@ class Job (Base):
 
 class JobEventType (Base):
     """A classification of events in the Log."""
-    abbrev = models.CharField (max_length=CHAR_LIMITS['abbr'])
-    name = models.CharField (max_length=CHAR_LIMITS['name'])
-    desc = models.CharField (max_length=CHAR_LIMITS['desc'])
+    abbrev = models.CharField (sql.String (CHAR_LIMITS['abbr']))
+    name = models.CharField (sql.String (CHAR_LIMITS['name']))
+    desc = models.CharField (sql.String (CHAR_LIMITS['desc']))
 
     def __unicode__ (self):
         """Text representation."""
@@ -75,4 +63,15 @@ class JobLog (Base):
     owner = models.ForeignKey (JobOwner, null=True)
     event = models.ForeignKey (JobEventType)
     timestamp = models.DateTimeField (auto_now_add=True)
-    note = models.CharField (max_length=CHAR_LIMITS['desc'])
+    note = models.CharField (sql.String (CHAR_LIMITS['desc']))
+
+def init_db (url, verbose=False):
+    """Initialize connection to database."""
+    global session
+    engine = sql.create_engine (url, echo=verbose)
+    session = orm.scoped_session (
+        orm.sessionmaker (autocommit=False,
+                          autoflush=False,
+                          bind=engine))
+    Base.query = session.query_property ()
+    Base.metadata.create_all (bind=engine)
