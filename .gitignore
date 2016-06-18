@@ -2,3 +2,6 @@ __pycache__
 *~
 *.pyc
 hacks
+Flask-User-starter-app
+dist
+jobflask.egg-info
