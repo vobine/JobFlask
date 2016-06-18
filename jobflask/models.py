@@ -29,9 +29,13 @@ JOB_STATES_ABBR = dict ((v[0], k)
 
 # We subclass User to turn it into something more flexible someday.
 class JobOwner (Base):
-    """This will include some more elaborate permission mechanism."""
+    """This will include some more elaborate permission mechanism,
+probably based on flask_user or flask_login."""
     __tablename__ = 'users'
     id = sql.Column (sql.Integer, primary_key=True)
+
+    jobs = orm.relationship ('Job')
+    events = orm.relationship ('JobLog')
 
 class Job (Base):
     """An individual task to be scheduled. Grist for the mill."""
@@ -40,8 +44,10 @@ class Job (Base):
     id = sql.Column (sql.Integer, primary_key=True)
     name = sql.Column (sql.String (CHAR_LIMITS['name']))
     desc = sql.Column (sql.Text)
-    owner = sql.Column (sql.ForeignKey ('users.id'))
     state = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
+
+    owner = sql.Column (sql.ForeignKey ('users.id'))
+    events = orm.relationship ('JobLog')
 
     def __repr__ (self):
         """Text representation."""
@@ -56,6 +62,8 @@ class JobEventType (Base):
     name = sql.Column (sql.String (CHAR_LIMITS['name']))
     desc = sql.Column (sql.Text)
 
+    events = orm.relationship ('JobLog')
+
     def __repr__ (self):
         """Text representation."""
         return '<JobEvent {0:s}>'.format (self.abbrev)
@@ -65,11 +73,12 @@ class JobLog (Base):
     __tablename__ = 'joblog'
 
     id = sql.Column (sql.Integer, primary_key=True)
+    timestamp = sql.Column (sql.DateTime)
+    note = sql.Column (sql.Text)
+
     job = sql.Column (sql.ForeignKey ('jobs.id'))
     owner = sql.Column (sql.ForeignKey ('users.id'))
     event = sql.Column (sql.ForeignKey ('jobevents.id'))
-    timestamp = sql.Column (sql.DateTime)
-    note = sql.Column (sql.Text)
 
     def __repr__ (self):
         """Text representation."""
