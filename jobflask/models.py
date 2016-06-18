@@ -33,15 +33,15 @@ class JobOwner (Base):
     """This will include some more elaborate permission mechanism."""
     pass
 
-# All models have a default ID field.
-
 class Job (Base):
     """An individual task to be scheduled. Grist for the mill."""
-    name = models.CharField (sql.String (CHAR_LIMITS['name']))
-    desc = models.CharField (sql.String (CHAR_LIMITS['desc']))
-    owner = models.ForeignKey (JobOwner, null=True)
-    state = models.IntegerField (choices=tuple (
-        (k, v[1]) for k, v in JOB_STATES.items ()))
+    __tablename__ = 'jobs'
+
+    id = sql.Column (sql.Integer, primary_key=True)
+    name = sql.Column (sql.String (CHAR_LIMITS['name']))
+    desc = sql.Column (sql.String (CHAR_LIMITS['desc']))
+    owner = sql.Column (sql.ForeignKey ('users.id'))
+    state = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
 
     def __unicode__ (self):
         """Text representation."""
@@ -49,9 +49,10 @@ class Job (Base):
 
 class JobEventType (Base):
     """A classification of events in the Log."""
-    abbrev = models.CharField (sql.String (CHAR_LIMITS['abbr']))
-    name = models.CharField (sql.String (CHAR_LIMITS['name']))
-    desc = models.CharField (sql.String (CHAR_LIMITS['desc']))
+    __tablename__ = 'jobevents'
+    abbrev = sql.Column (sql.String (CHAR_LIMITS['abbr']))
+    name = sql.Column (sql.String (CHAR_LIMITS['name']))
+    desc = sql.Column (sql.String (CHAR_LIMITS['desc']))
 
     def __unicode__ (self):
         """Text representation."""
@@ -59,11 +60,12 @@ class JobEventType (Base):
 
 class JobLog (Base):
     """A state change for a Job."""
-    job = models.ForeignKey (Job)
-    owner = models.ForeignKey (JobOwner, null=True)
-    event = models.ForeignKey (JobEventType)
-    timestamp = models.DateTimeField (auto_now_add=True)
-    note = models.CharField (sql.String (CHAR_LIMITS['desc']))
+    __tablename__ = 'joblog'
+    job = sql.Column (sql.ForeignKey ('jobs.id'))
+    owner = sql.Column (sql.ForeignKey ('users.id'))
+    event = sql.Column (sql.ForeignKey ('jobevents.id'))
+    timestamp = sql.Column (sql.Datetime ())
+    note = sql.Column (sql.Text ())
 
 def init_db (url, verbose=False):
     """Initialize connection to database."""
