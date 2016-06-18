@@ -8,7 +8,6 @@ Base = sqldcl.declarative_base ()
 CHAR_LIMITS = {
     'abbr' : 4,
     'name' : 20,
-    'desc' : 120,
 }
 
 JOB_STATES_LIST = ((1, 'new', 'Uninitialized',
@@ -39,7 +38,7 @@ class Job (Base):
 
     id = sql.Column (sql.Integer, primary_key=True)
     name = sql.Column (sql.String (CHAR_LIMITS['name']))
-    desc = sql.Column (sql.String (CHAR_LIMITS['desc']))
+    desc = sql.Column (sql.Text)
     owner = sql.Column (sql.ForeignKey ('users.id'))
     state = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
 
@@ -54,7 +53,7 @@ class JobEventType (Base):
     id = sql.Column (sql.Integer, primary_key=True)
     abbrev = sql.Column (sql.String (CHAR_LIMITS['abbr']))
     name = sql.Column (sql.String (CHAR_LIMITS['name']))
-    desc = sql.Column (sql.String (CHAR_LIMITS['desc']))
+    desc = sql.Column (sql.Text)
 
     def __repr__ (self):
         """Text representation."""
