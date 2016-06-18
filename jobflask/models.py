@@ -30,7 +30,8 @@ JOB_STATES_ABBR = dict ((v[0], k)
 # We subclass User to turn it into something more flexible someday.
 class JobOwner (Base):
     """This will include some more elaborate permission mechanism."""
-    pass
+    __tablename__ = 'users'
+    id = sql.Column (sql.Integer, primary_key=True)
 
 class Job (Base):
     """An individual task to be scheduled. Grist for the mill."""
@@ -67,7 +68,7 @@ class JobLog (Base):
     job = sql.Column (sql.ForeignKey ('jobs.id'))
     owner = sql.Column (sql.ForeignKey ('users.id'))
     event = sql.Column (sql.ForeignKey ('jobevents.id'))
-    timestamp = sql.Column (sql.Datetime)
+    timestamp = sql.Column (sql.DateTime)
     note = sql.Column (sql.Text)
 
     def __repr__ (self):
