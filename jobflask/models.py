@@ -43,29 +43,37 @@ class Job (Base):
     owner = sql.Column (sql.ForeignKey ('users.id'))
     state = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
 
-    def __unicode__ (self):
+    def __repr__ (self):
         """Text representation."""
-        return '{0:s}'.format (self.name)
+        return '<Job {0:s}>'.format (self.name)
 
 class JobEventType (Base):
     """A classification of events in the Log."""
     __tablename__ = 'jobevents'
+
+    id = sql.Column (sql.Integer, primary_key=True)
     abbrev = sql.Column (sql.String (CHAR_LIMITS['abbr']))
     name = sql.Column (sql.String (CHAR_LIMITS['name']))
     desc = sql.Column (sql.String (CHAR_LIMITS['desc']))
 
-    def __unicode__ (self):
+    def __repr__ (self):
         """Text representation."""
-        return '{0:5s} {1:s}'.format (self.abbrev, self.name)
+        return '<JobEvent {0:s}>'.format (self.abbrev)
 
 class JobLog (Base):
     """A state change for a Job."""
     __tablename__ = 'joblog'
+
+    id = sql.Column (sql.Integer, primary_key=True)
     job = sql.Column (sql.ForeignKey ('jobs.id'))
     owner = sql.Column (sql.ForeignKey ('users.id'))
     event = sql.Column (sql.ForeignKey ('jobevents.id'))
-    timestamp = sql.Column (sql.Datetime ())
-    note = sql.Column (sql.Text ())
+    timestamp = sql.Column (sql.Datetime)
+    note = sql.Column (sql.Text)
+
+    def __repr__ (self):
+        """Text representation."""
+        return '<JobLog {0:d}>'.format (self.id)
 
 def init_db (url, verbose=False):
     """Initialize connection to database."""
