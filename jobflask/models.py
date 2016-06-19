@@ -53,32 +53,18 @@ class Job (Base):
         """Text representation."""
         return '<Job {0:s}>'.format (self.name)
 
-class JobEventType (Base):
-    """A classification of events in the Log."""
-    __tablename__ = 'jobevents'
-
-    id = sql.Column (sql.Integer, primary_key=True)
-    abbrev = sql.Column (sql.String (CHAR_LIMITS['abbr']))
-    name = sql.Column (sql.String (CHAR_LIMITS['name']))
-    desc = sql.Column (sql.Text)
-
-    events = orm.relationship ('JobLog')
-
-    def __repr__ (self):
-        """Text representation."""
-        return '<JobEvent {0:s}>'.format (self.abbrev)
-
 class JobLog (Base):
     """A state change for a Job."""
     __tablename__ = 'joblog'
 
     id = sql.Column (sql.Integer, primary_key=True)
     timestamp = sql.Column (sql.DateTime)
+    oldState = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
+    newState = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
     note = sql.Column (sql.Text)
 
     job = sql.Column (sql.ForeignKey ('jobs.id'))
     owner = sql.Column (sql.ForeignKey ('users.id'))
-    event = sql.Column (sql.ForeignKey ('jobevents.id'))
 
     def __repr__ (self):
         """Text representation."""
