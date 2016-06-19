@@ -1,3 +1,4 @@
+import datetime as dt
 import sqlalchemy as sql
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as sqldcl
@@ -43,8 +44,9 @@ class Job (Base):
 
     id = sql.Column (sql.Integer, primary_key=True)
     name = sql.Column (sql.String (CHAR_LIMITS['name']))
-    desc = sql.Column (sql.Text)
-    state = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
+    desc = sql.Column (sql.Text, nullable=True)
+    state = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)),
+                        default='new')
 
     owner = sql.Column (sql.ForeignKey ('users.id'))
     events = orm.relationship ('JobLog')
@@ -58,10 +60,11 @@ class JobLog (Base):
     __tablename__ = 'joblog'
 
     id = sql.Column (sql.Integer, primary_key=True)
-    timestamp = sql.Column (sql.DateTime)
+    timestamp = sql.Column (sql.DateTime (timezone=True),
+                            default=dt.datetime.now ())
     oldState = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
     newState = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
-    note = sql.Column (sql.Text)
+    note = sql.Column (sql.Text, nullable=True)
 
     job = sql.Column (sql.ForeignKey ('jobs.id'))
     owner = sql.Column (sql.ForeignKey ('users.id'))
