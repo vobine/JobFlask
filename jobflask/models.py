@@ -2,6 +2,8 @@ import datetime as dt
 import sqlalchemy as sql
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as sqldcl
+from passlib.hash import bcrypt_sha256 as bcrypt
+import flask_login
 
 Base = sqldcl.declarative_base ()
 
@@ -28,15 +30,37 @@ JOB_STATES = dict ((jsv[0], jsv[1:])
 JOB_STATES_ABBR = dict ((v[0], k)
                         for k, v in JOB_STATES.items ())
 
-# We subclass User to turn it into something more flexible someday.
-class JobOwner (Base):
-    """This will include some more elaborate permission mechanism,
-probably based on flask_user or flask_login."""
+class JobOwner (Base, flask_login.UserMixin):
+    """A JobOwner is a User for Flask-login credentials."""
     __tablename__ = 'users'
+
     id = sql.Column (sql.Integer, primary_key=True)
+    name = sql.Column (sql.String (CHAR_LIMITS['name']))
+    hashPass = sql.Column (sql.String (150), nullable=True)
 
     jobs = orm.relationship ('Job')
     events = orm.relationship ('JobLog')
+
+    def __init__ (self, name, password):
+        """Store password in a trapdoor hash."""
+        self.name = name
+        self.hashPass = bcrypt.encrypt (password)
+
+    def get_id (self):
+        """Return the user name for Flask-login."""
+        return self.name
+
+    def setPass (self, password):
+        """Modify password, with proper hygiene."""
+        self.hashPass = bcrypt.encrypt (password)
+
+    def checkPass (self, password):
+        """Test proffered password against stored hash."""
+        return bcrypt.verify (password, self.hashPass)
+
+    def __repr__ (self):
+        """Display a job owner."""
+        return '<JobOwner {0:d} {1:s}>'.format (self.id, self.name)
 
 class Job (Base):
     """An individual task to be scheduled. Grist for the mill."""
