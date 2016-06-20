@@ -41,4 +41,9 @@ def login ():
     """Prompt for and check credentials."""
     return flask.render_template ('login.html')
 
-# @flask_login.login_required
+@app.route ('/logout')
+@flask_login.login_required
+def logout ():
+    flask_login.logout_user ()
+    flask.flash ('You are now logged out.')
+    return flask.redirect (flask.url_for ('login'))
