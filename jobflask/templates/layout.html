@@ -2,16 +2,42 @@
 <title>JobJar (Flask edition)</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 <div class=page>
-  <h1>JobJar</h1>
-  <div class=metanav>
+  <h1>Job Jar</h1>
   {% if current_user.is_authenticated %}
+  <div class=metanav>
     <a href="{{ url_for('logout') }}">log out</a>
-  {% else %}
-    <a href="{{ url_for('login') }}">log in</a>
-  {% endif %}
   </div>
-  {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-  {% endfor %}
   {% block body %}{% endblock %}
+  {% else %}
+    <h2>Welcome to JobJar.</h2>
+  <p>
+    If you do not yet have an account, you can register for one
+    with your email address:
+    <form action="{{ url_for('register') }}" method=post>
+      <dl>
+        <dt>Email:</dt>
+        <dd><input type=text name=email></dd>
+        <dt>Register:</dt>
+        <dd><input type=submit value="Register"></dd>
+      </dl>
+    </form>
+  </p>
+  <hr/>
+  <p>
+    If you have an account, you can log in here:
+    <form action="{{ url_for('login') }}" method=post>
+      <dl>
+        <dt>Username:</dt>
+        <dd> <input type=text name=username> </dd>
+        <dt>Password:</dt>
+        <dd> <input type=password name=password> </dd>
+        <dt>Login:</dt>
+        <dd> <input type=submit value="login"> </dd>
+      </dl>
+    </form>
+  </p>
+  {% endif %}
+  {% for message in get_flashed_messages() %}
+  <div class=flash>{{ message }}</div>
+  {% endfor %}
 </div>

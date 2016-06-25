@@ -35,11 +35,15 @@ def root ():
     """Root page: not much here."""
     return flask.render_template ('layout.html')
 
-@app.route ('/login',
-            methods=['GET', 'POST'])
+@app.route ('/login', methods=['POST'])
 def login ():
     """Prompt for and check credentials."""
     return flask.render_template ('login.html')
+
+@app.route ('/register', methods=['POST'])
+def register ():
+    """Apply to register a new account."""
+    return flask.render_template ('register.html')
 
 @app.route ('/logout')
 @flask_login.login_required
