@@ -20,7 +20,7 @@ models.init_db  (DATABASE)
 # AAA machinery
 login_manager = flask_login.LoginManager ()
 login_manager.init_app (app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'root'
 
 @login_manager.user_loader
 def load_user (user_id):
@@ -40,8 +40,16 @@ def root ():
 
 @app.route ('/login', methods=['POST'])
 def login ():
-    """Prompt for and check credentials."""
-    return flask.render_template ('login.html')
+    """Check credentials."""
+    user = flask.request.form['username']
+    jobo = load_user (user)
+    if jobo and jobo.checkPass (flask.request.form['password']):
+        flask_login.login_user (jobo)
+        flask.flash ('Welcome, {0:s}'.format (user))
+    else:
+        flask.flash ('Invalid login attempt. Try again?')
+
+    return flask.redirect (flask.url_for ('root'))
 
 @app.route ('/register', methods=['POST'])
 def register ():
