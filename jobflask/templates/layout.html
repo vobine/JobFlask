@@ -5,7 +5,7 @@
   <h1>Job Jar</h1>
   {% if current_user.is_authenticated %}
   <div class=metanav>
-    <a href="{{ url_for('logout') }}">log out</a>
+    <a href="{{ url_for ('logout') }}">Log out</a>
   </div>
   {% block body %}{% endblock %}
   {% else %}
@@ -13,7 +13,7 @@
   <p>
     If you do not yet have an account, you can register for one
     with your email address:
-    <form action="{{ url_for('register') }}" method=post>
+    <form action="{{ url_for ('register') }}" method=post>
       <dl>
         <dt>Email:</dt>
         <dd><input type=text name=email></dd>
@@ -25,7 +25,7 @@
   <hr/>
   <p>
     If you have an account, you can log in here:
-    <form action="{{ url_for('login') }}" method=post>
+    <form action="{{ url_for ('login') }}" method=post>
       <dl>
         <dt>Username:</dt>
         <dd> <input type=text name=username> </dd>
@@ -37,7 +37,7 @@
     </form>
   </p>
   {% endif %}
-  {% for message in get_flashed_messages() %}
+  {% for message in get_flashed_messages () %}
   <div class=flash>{{ message }}</div>
   {% endfor %}
 </div>
