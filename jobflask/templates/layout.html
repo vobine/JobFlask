@@ -5,6 +5,12 @@
   <h1>Job Jar</h1>
   {% if current_user.is_authenticated %}
   <div class=metanav>
+    <a href="{{ url_for ('root') }}">Home</a>
+    <a href="{{ url_for ('jobs') }}">Job list</a>
+    <a href="{{ url_for ('log') }}">History</a>
+    <a href="{{ url_for ('keywords') }}">Keywords</a>
+    <a href="{{ url_for ('options') }}">Options</a>
+    <a href="{{ url_for ('search') }}">Search</a>
     <a href="{{ url_for ('logout') }}">Log out</a>
   </div>
   {% block body %}{% endblock %}

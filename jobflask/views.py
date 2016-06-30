@@ -76,6 +76,41 @@ def register ():
     flask_login.login_user (newid)
     return flask.render_template ('register.html')
 
+@app.route ('/jobs')
+@flask_login.login_required
+def jobs ():
+    """Comprehensive job list."""
+    flask.flash ('Job list: not yet implemented')
+    return root ()
+
+@app.route ('/log')
+@flask_login.login_required
+def log ():
+    """History of job activity."""
+    flask.flash ('Job log: not yet implemented')
+    return root ()
+
+@app.route ('/keywords')
+@flask_login.login_required
+def keywords ():
+    """Comprehensive job list."""
+    flask.flash ('Keyword and tag management: not yet implemented')
+    return root ()
+
+@app.route ('/options')
+@flask_login.login_required
+def options ():
+    """User option configuration."""
+    flask.flash ('Option edit: not yet implemented')
+    return root ()
+
+@app.route ('/search')
+@flask_login.login_required
+def search ():
+    """Search for jobs."""
+    flask.flash ('Job search: not yet implemented')
+    return root ()
+
 @app.route ('/logout')
 @flask_login.login_required
 def logout ():
