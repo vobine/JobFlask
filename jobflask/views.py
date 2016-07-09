@@ -4,7 +4,7 @@ import random
 import flask
 import flask_login
 from . import app
-from . import models 
+from . import models
 
 # configuration
 DATABASE = 'sqlite:////tmp/jobflask.db'
