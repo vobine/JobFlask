@@ -73,7 +73,7 @@ class Job (Base):
                         default='new')
 
     owner = sql.Column (sql.ForeignKey ('users.id'))
-    events = orm.relationship ('JobLog')
+    events = orm.relationship ('JobLog', back_populates='job')
 
     def __repr__ (self):
         """Text representation."""
@@ -90,7 +90,8 @@ class JobLog (Base):
     newState = sql.Column (sql.Enum (* (v[1] for v in JOB_STATES_LIST)))
     note = sql.Column (sql.Text, nullable=True)
 
-    job = sql.Column (sql.ForeignKey ('jobs.id'))
+    job_id = sql.Column (sql.ForeignKey ('jobs.id'))
+    job = orm.relationship ('Job', back_populates='events')
     owner = sql.Column (sql.ForeignKey ('users.id'))
 
     def __repr__ (self):
