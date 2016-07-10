@@ -76,12 +76,29 @@ def register ():
     flask_login.login_user (newid)
     return flask.render_template ('register.html')
 
-@app.route ('/jobs')
+@app.route ('/jobs', methods=['GET', 'POST'])
 @flask_login.login_required
 def jobs ():
-    """Comprehensive job list."""
-    flask.flash ('Job list: not yet implemented')
-    return root ()
+    """Comprehensive job list, with optional new job."""
+    error = "Kiss me, you foo"
+    if flask.request.method == 'POST':
+        # Before listing jobs, make a new one
+        name = flask.request.form['jobname']
+        if models.session.query (models.Job) \
+           .filter_by (name=name) \
+           .one_or_none ():
+            flask.flash ('There is already a job named {0:s}'.format (name))
+        else:
+            # Add new job
+            newjob = models.Job (name=name,
+                                 desc=flask.request.form['description'])
+            print ('new job: {0:s}'.format (repr (newjob)))
+            models.session.add (newjob)
+            models.session.commit()
+
+    jobs = [dict (name=j.name, desc=j.desc)
+            for j in models.session.query (models.Job).all ()]
+    return flask.render_template ('jobs.html', jobs=jobs)
 
 @app.route ('/log')
 @flask_login.login_required

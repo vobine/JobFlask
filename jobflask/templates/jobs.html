@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Job List</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>
+  {% else %}
+    <ul>
+    {% for job in jobs %}
+      <li>Job <em>{{ job.name }}</em>: {{ job.desc|safe }}</li>
+    {% else %}
+      <li><em>(No active jobs.)</em></li>
+    {% endfor %}
+    </ul>
+  <h2>Add a job</h2>
+  <form action="{{ url_for ('jobs') }}" method=post>
+    <dl>
+      <dt>Job name:</dt>
+      <dd><input type=text size=30 name=jobname></dd>
+      <dt>Description:</dt>
+      <dd><textarea name="description"></textarea></dd>
+      <dd><input type=submit value=Enter></dd>
+    </dl>
+  </form>
+  {% endif %}
+{% endblock %}
