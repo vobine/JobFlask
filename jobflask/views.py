@@ -80,7 +80,6 @@ def register ():
 @flask_login.login_required
 def jobs ():
     """Comprehensive job list, with optional new job."""
-    error = "Kiss me, you foo"
     if flask.request.method == 'POST':
         # Before listing jobs, make a new one
         name = flask.request.form['jobname']
@@ -90,9 +89,13 @@ def jobs ():
             flask.flash ('There is already a job named {0:s}'.format (name))
         else:
             # Add new job
+            newlog = models.JobLog (newState='new',
+                                    owner=flask_login.current_user.id,
+                                    note='Created from form')
             newjob = models.Job (name=name,
-                                 desc=flask.request.form['description'])
-            print ('new job: {0:s}'.format (repr (newjob)))
+                                 desc=flask.request.form['description'],
+                                 owner=flask_login.current_user.id,
+                                 events=[newlog])
             models.session.add (newjob)
             models.session.commit()
 
