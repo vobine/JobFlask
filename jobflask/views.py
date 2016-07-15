@@ -99,9 +99,16 @@ def jobs ():
             models.session.add (newjob)
             models.session.commit()
 
-    jobs = [dict (name=j.name, desc=j.desc)
+    jobs = [dict (id=j.id, name=j.name, desc=j.desc)
             for j in models.session.query (models.Job).all ()]
     return flask.render_template ('jobs.html', jobs=jobs)
+
+@app.route ('/onejob')
+@flask_login.login_required
+def onejob ():
+    """Panel to edit a job."""
+    flask.flash ('Edit job: not yet implemented')
+    return jobs ()
 
 @app.route ('/log')
 @flask_login.login_required

@@ -5,11 +5,17 @@
   {% else %}
     <table class="joblist">
        <tr>
+         <th>Edit</th>
          <th>Name</th>
          <th>Description</th>
        </tr>
     {% for job in jobs %}
       <tr>
+        <td>
+          <a href="{{ url_for ('onejob') ~ '?' ~ job.id }}">
+            Edit job {{ job.id }}
+          </a>
+        </td>
         <td>{{ job.name }}</td>
         <td>{{ job.desc|safe }}</td>
       </tr>
