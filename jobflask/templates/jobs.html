@@ -12,11 +12,11 @@
     {% for job in jobs %}
       <tr>
         <td>
-          <a href="{{ url_for ('onejob') ~ '?' ~ job.id }}">
+          <a href="{{ url_for ('onejob') ~ '?id=' ~ job.id }}">
             Edit job {{ job.id }}
           </a>
         </td>
-        <td>{{ job.name }}</td>
+        <td>{{ job.name|safe }}</td>
         <td>{{ job.desc|safe }}</td>
       </tr>
     {% else %}

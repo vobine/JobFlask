@@ -107,8 +107,38 @@ def jobs ():
 @flask_login.login_required
 def onejob ():
     """Panel to edit a job."""
-    flask.flash ('Edit job: not yet implemented')
-    return jobs ()
+    error = None
+    try:
+        id = flask.request.args['id']
+    except KeyError:
+        thisJob = None
+        id = None
+    else:
+        thisJob = models.session.query (models.Job) \
+                                .filter_by (id=id) \
+                                .one_or_none ()
+
+    if thisJob:
+        job = dict (id=thisJob.id,
+                    name=thisJob.name,
+                    desc=thisJob.desc,
+                    state=thisJob.state,
+                    owner=thisJob.owner)
+    else:
+        job = None
+        error = 'No job found with id {0:d}'.format (id)
+
+    flask.flash ('Edit job: first draft')
+    return flask.render_template ('onejob.html', job=job, error=error)
+
+@app.route ('/jobEdited', methods=['POST'])
+@flask_login.login_required
+def jobEdited ():
+    """Save result of an edit."""
+    for k, v in flask.request.form.items ():
+        print ('{0:s}: {1:s}'.format (str (k), str (v)))
+    flask.flash ('Saving of edits not yet implemented.')
+    return root ()
 
 @app.route ('/log')
 @flask_login.login_required

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Edit Job {{ job.id }}</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>
+  {% else %}
+  <form action="{{ url_for ('jobEdited') }}" method=post>
+    <dl>
+      <dt>Job name:</dt>
+      <dd>
+        <input type=text size=30 name=jobname value={{ job.name|safe }}>
+      </dd>
+      <dt>Description:</dt>
+      <dd>
+        <textarea name="description">
+          {{ job.desc|safe }}
+        </textarea>
+      </dd>
+      <dd>
+        <input type=submit name="submit" value="Save">
+        <input type=submit name="submit" value="Cancel">
+      </dd>
+    </dl>
+  </form>
+  {% endif %}
+{% endblock %}
