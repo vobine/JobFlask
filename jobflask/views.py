@@ -114,16 +114,17 @@ def onejob ():
         thisJob = None
         id = None
     else:
-        thisJob = models.session.query (models.Job) \
-                                .filter_by (id=id) \
-                                .one_or_none ()
+        thisJob, owner = models.session.query (models.Job,
+                                               models.JobOwner) \
+                                       .filter_by (id=id) \
+                                       .one_or_none ()
 
     if thisJob:
         job = dict (id=thisJob.id,
                     name=thisJob.name,
                     desc=thisJob.desc,
                     state=thisJob.state,
-                    owner=thisJob.owner)
+                    owner=owner.name)
     else:
         job = None
         error = 'No job found with id {0:d}'.format (id)

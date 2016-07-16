@@ -15,6 +15,11 @@
           {{ job.desc|safe }}
         </textarea>
       </dd>
+      <dt>State:</dt>
+      <dd>{{ job.state }}</dd>
+      <dt>Owner:</dt>
+      <dd>{{ job.owner }}</dd>
+      <dt>Submit:</dt>
       <dd>
         <input type=submit name="submit" value="Save">
         <input type=submit name="submit" value="Cancel">
