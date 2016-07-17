@@ -120,10 +120,12 @@ def onejob ():
                                        .one_or_none ()
 
     if thisJob:
+        states = [s[1] for s in models.JOB_STATES_LIST]
         job = dict (id=thisJob.id,
                     name=thisJob.name,
                     desc=thisJob.desc,
                     state=thisJob.state,
+                    states=states,
                     owner=owner.name)
     else:
         job = None

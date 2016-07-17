@@ -16,7 +16,13 @@
         </textarea>
       </dd>
       <dt>State:</dt>
-      <dd>{{ job.state }}</dd>
+      <dd>
+        {% for ss in job.states %}
+        <input type="radio" name="state" value="{{ ss }}"
+               {% if ss == job.state %} checked {% endif %}
+               >{{ ss }}
+        {% endfor %}
+      </dd>
       <dt>Owner:</dt>
       <dd>{{ job.owner }}</dd>
       <dt>Submit:</dt>
