@@ -138,10 +138,49 @@ def onejob ():
 @flask_login.login_required
 def jobEdited ():
     """Save result of an edit."""
-    for k, v in flask.request.form.items ():
-        print ('{0:s}: {1:s}'.format (str (k), str (v)))
-    flask.flash ('Saving of edits not yet implemented.')
-    return root ()
+
+    # If the user canceled edit, then don't do anything.
+    action = flask.request.form.get ('submit', None)
+    if action == 'Save':
+        # Please continue.
+        pass
+    elif action == 'Cancel':
+        # Ignore edit.
+        flask.flash ('Not saving changes.')
+        return flask.redirect (flask.url_for ('jobs'))
+    else:
+        # Unknown action
+        flask.flash ('Unknown action {0:s}'.format (str (action)))
+        return flask.redirect (flask_url_for ('jobs'))
+
+    # Fetch the current job, if it's there
+    try:
+        id = int (flask.request.form['id'])
+    except KeyError:
+        # Form must specify a job ID
+        thisJob = None
+        id = None
+    except ValueError:
+        # Job ID must be an integer
+        thisJob = None
+        id = flask.request.args['id']
+    else:
+        # Fetch the job
+        thisJob = models.session.query (models.Job) \
+                  .filter_by (id=id) \
+                  .one_or_none ()
+
+    # Did the fetch work?
+    if not thisJob:
+        # No.
+        flask.flash ('Job ID {0:s} does not exist'.format (str (id)))
+    else:
+        # Yes, modify the fetched job with values from the form.
+        thisJob.state = flask.request.form['state']
+        models.session.commit ()
+        flask.flash ('Job {0:d} modified'.format (id))
+
+    return flask.redirect (flask.url_for ('jobs'))
 
 @app.route ('/log')
 @flask_login.login_required

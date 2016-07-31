@@ -4,6 +4,7 @@
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>
   {% else %}
   <form action="{{ url_for ('jobEdited') }}" method=post>
+    <input type="hidden" name="id" value="{{ job.id|safe }}">
     <dl>
       <dt>Job name:</dt>
       <dd>
