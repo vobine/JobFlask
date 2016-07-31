@@ -99,7 +99,7 @@ def jobs ():
             models.session.add (newjob)
             models.session.commit()
 
-    jobs = [dict (id=j.id, name=j.name, desc=j.desc)
+    jobs = [dict (id=j.id, name=j.name, desc=j.desc, state=j.state)
             for j in models.session.query (models.Job).all ()]
     return flask.render_template ('jobs.html', jobs=jobs)
 

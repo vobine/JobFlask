@@ -7,6 +7,7 @@
        <tr>
          <th>Edit</th>
          <th>Name</th>
+         <th>State</th>
          <th>Description</th>
        </tr>
     {% for job in jobs %}
@@ -17,6 +18,7 @@
           </a>
         </td>
         <td>{{ job.name|safe }}</td>
+        <td>{{ job.state|safe }}</td>
         <td>{{ job.desc|safe }}</td>
       </tr>
     {% else %}
