@@ -23,7 +23,8 @@ setup(
     name='jobflask',
     description='JobFlask: an implementation of JobJar using Flask.',
     long_description=long_description, # Extracted from README.rst, above
-    version='VERSION tbd!',
+    use_scm_version=True,
+    setup_requires=[ 'setuptools_scm' ],
     license='GNU General Public License, Version 2',
     author='Hal Peterson',
     packages=[ 'jobflask' ],

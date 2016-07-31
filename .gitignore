@@ -5,3 +5,4 @@ hacks
 Flask-User-starter-app
 dist
 jobflask.egg-info
+.eggs
