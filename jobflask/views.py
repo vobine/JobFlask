@@ -177,6 +177,7 @@ def jobEdited ():
     else:
         # Yes, modify the fetched job with values from the form.
         thisJob.state = flask.request.form['state']
+        thisJob.desc = flask.request.form['description']
         models.session.commit ()
         flask.flash ('Job {0:d} modified'.format (id))
 
